@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include "Sound.h"
 #include "DAC.h"
+#include Timer0.h
+#include ../inc/tm4c123gh6pm.h
+
 // these are sampled at 8 bits 11kHz
 // If your DAC is less than 8 bits you will need to scale the data
 const uint8_t shoot[4080] = {
@@ -1138,12 +1141,27 @@ const uint8_t highpitch[1802] = {
   250, 207};
 
 // define a background task to run at 11 kHz, which outputs one value to DAC each interrupt
-  
+  uint32_t length;
+const uint8_t *Soundpt;
+void SoundTask(void)
+{
+if(length)	
+{
+DAC_Out(*Soundpt/4);
+	Soundpt++;
+	length--;
+}
+else{
+	NVIC_DIS0_R = 1<<19;
+}
+	
+}
 void Sound_Init(void){
 // write this
   // initialize a 11kHz timer, and the DAC
 		DAC_Init(); // initialize outputs of the DAC
-	  
+	  length = 0;
+	Timer0_Init(&SoundTask,80000000/11000);
 };
 
 //******* Sound_Start ************
@@ -1157,5 +1175,17 @@ void Sound_Init(void){
 // special cases: as you wish to implement
 void Sound_Start(const uint8_t *pt, uint32_t count){
 // write this
+	
+	length = count;
+	Soundpt = pt;
+	NVIC_EN0_R = 1<<19;
 };
 
+void Sound_Shoot(void){Sound_Start(shoot,4080);};
+void Sound_Killed(void){Sound_Start(invaderkilled,3377);};
+void Sound_Explosion(void){Sound_Start(explosion,2000);};
+void Sound_Invader1(void){Sound_Start(fastinvader1,982);};
+void Sound_Invader2(void){Sound_Start(fastinvader2,1042);};
+void Sound_Invader3(void){Sound_Start(fastinvader3,1054);};
+void Sound_Invader4(void){Sound_Start(fastinvader4,1098);};
+void Sound_HighPitch(void){Sound_Start(highpitch,1802);};
