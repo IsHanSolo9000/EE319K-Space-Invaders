@@ -10,6 +10,7 @@
 
 // Header files contain the prototypes for public functions 
 // this file explains what the module does
+void Sound_Task(void);
 void Sound_Init(void);
 //******* Sound_Start ************
 // This function does not output to the DAC. 
@@ -21,6 +22,14 @@ void Sound_Init(void);
 // Output: none
 // special cases: as you wish to implement
 void Sound_Play(const uint8_t *pt, uint32_t count);
+void Sound_Shoot(void);
+void Sound_Killed(void);
+void Sound_Explosion(void);
+void Sound_Invader1(void);
+void Sound_Invader2(void);
+void Sound_Invader3(void);
+void Sound_Invader4(void);
+void Sound_HighPitch(void);
 
 
 #endif
